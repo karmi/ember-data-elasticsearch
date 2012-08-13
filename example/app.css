@@ -1,0 +1,104 @@
+body {
+  color: #222;
+  background-color: #f5f5f5;
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  padding: 2em 4em;
+}
+
+h1 {
+  color: #d33850;
+  font-size: 3em;
+  font-weight: 300;
+  margin: 0 0 0.5em 0;
+  padding: 0;
+}
+
+h1 div.ember-view {
+  display: inline;
+}
+
+h1 small {
+  font-size: 0.75em;
+  font-weight: 100;
+}
+
+#create_task {
+  font-family: 'Helvetica Neue', Helvetica, sans-serif;
+  font-size: 2em;
+  font-weight: 300;
+  padding: 0.5em;
+  width: 20em;
+  outline: none;
+  border: 1px solid #eaeaea;
+  box-shadow: rgba(0, 0, 0, 0.1) 0 0 1px;
+}
+
+ul#tasks {
+  margin: 1.5em 0 0 0;
+  padding: 0;
+}
+
+li.task {
+  color: #444;
+  font-size: 1.5em;
+  font-weight: 300;
+  list-style-type: none;
+  margin: 0.5em 0 0 0;
+  padding: 0 0 0.5em 0;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+ul li.task:last-of-type {
+  border: none;
+}
+
+li.task input[type=checkbox] {
+  margin-right: 0.5em;
+  top: -0.3em;
+  position: relative;
+}
+
+li.task .remove-task {
+  top: 0.4em;
+  display: inline-block;
+  position: relative;
+  visibility: hidden;
+  opacity: 0.45;
+}
+
+li.task:hover .remove-task {
+  visibility: visible;
+}
+
+li.task .remove-task:hover {
+  opacity: 0.75;
+  cursor: pointer;
+}
+
+li.task.completed {
+  color: #999;
+  text-decoration: line-through;
+}
+
+/* Lifted from Twitter bootstrap */
+[class^="icon-"], [class*=" icon-"] {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  line-height: 14px;
+  vertical-align: text-top;
+  background-image: url("https://raw.github.com/twitter/bootstrap/master/img/glyphicons-halflings.png");
+  background-position: 14px 14px;
+  background-repeat: no-repeat;
+  *margin-right: .3em;
+}
+[class^="icon-"]:last-child, [class*=" icon-"]:last-child {
+  *margin-left: 0;
+}
+
+.icon-ok {
+  background-position: -288px 0;
+}
+.icon-remove {
+  background-position: -312px 0;
+}
