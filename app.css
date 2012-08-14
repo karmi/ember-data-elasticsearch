@@ -5,6 +5,10 @@ body {
   padding: 2em 4em;
 }
 
+a {
+  color: #222;
+}
+
 h1 {
   color: #d33850;
   font-size: 3em;
@@ -80,6 +84,20 @@ li.task.completed {
   text-decoration: line-through;
 }
 
+p.error {
+  color: #222;
+  background: #e0e0e0;
+  padding: 1em;
+  border-radius: 0.75em;
+  width: 40em;
+}
+p.error * {
+  color: #222;
+}
+p.error [class^="icon-"] {
+  margin-top: 2px;
+}
+
 /* Lifted from Twitter bootstrap */
 [class^="icon-"], [class*=" icon-"] {
   display: inline-block;
@@ -101,4 +119,7 @@ li.task.completed {
 }
 .icon-remove {
   background-position: -312px 0;
+}
+.icon-exclamation-sign {
+  background-position: 0 -120px;
 }
