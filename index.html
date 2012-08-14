@@ -1,0 +1,44 @@
+<!doctype html>
+<html>
+<head>
+  <title>Tasks</title>
+  <link rel="stylesheet" href="app.css">
+</head>
+<body>
+  <h1>
+    Tasks
+    <script type="text/x-handlebars">
+      <small>|
+        {{App.Controllers.tasks.remaining.length}} remaining
+      </small>
+    </script>
+  </h1>
+
+  <script type="text/x-handlebars">
+    {{view App.Views.CreateTask id="create_task" placeholder="Add a new task..."}}
+  </script>
+
+  <script type="text/x-handlebars">
+  <ul id="tasks">
+    {{#each App.Controllers.tasks}}
+
+      <li {{bindAttr class=":task completed"}}>
+        {{view Ember.Checkbox checkedBinding="completed"}}
+        <label>{{title}}</label>
+        <a class="remove-task" title="[delete]" {{action removeTask this target="App.Controllers.tasks"}}>
+          <span class="icon-remove">&nbsp;</span>
+        </a>
+      </li>
+
+    {{/each}}
+  </ul>
+  </script>
+
+
+  <script src="http://code.jquery.com/jquery-1.7.2.min.js"></script>
+  <script src="http://cloud.github.com/downloads/wycats/handlebars.js/handlebars-1.0.0.beta.6.js"></script>
+  <script src="http://cloud.github.com/downloads/emberjs/ember.js/ember-1.0.pre.min.js"></script>
+
+  <script src="app.js"></script>
+</body>
+</html>
