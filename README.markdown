@@ -104,6 +104,12 @@ bindings and observers take care of updating the object with loaded data in an _
 See the _Ember Data_ [documentation](https://github.com/emberjs/data#finding-a-specific-record-instance)
 for more information.
 
+### Example Application
+
+The library includes
+an [example “todos” application](http://github.com/karmi/ember-data-elasticsearch/tree/master/example),
+as required by law.
+
 ### Tests
 
 The library comes with a _QUnit_-based integration test suite
