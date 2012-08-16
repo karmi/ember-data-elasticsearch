@@ -46,6 +46,16 @@
       var person = Person.find({query: { query_string: { query: 'john' } }});
       person.get("name");
 
+  ### Todo
+
+  * Resolve the content-type issues when talking to elasticsearch from Ajax.
+     Can't just add `contentType: 'application/json; charset=UTF-8'` to $.ajax,
+     because of: `Request header field Content-Type is not allowed by Access-Control-Allow-Headers.` error.
+
+  * Refactor the HTTP "client".
+
+  * Implement the "bulk" variant of API.
+
   @extends DS.Adapter
 */
 
