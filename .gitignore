@@ -3,3 +3,4 @@ tmp/
 dist/
 
 .bundle
+Gemfile.lock
