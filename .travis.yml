@@ -1,0 +1,19 @@
+# -------------------------------------------
+# Configuration file for http://travis-ci.org
+# -------------------------------------------
+
+rvm:
+  - 1.9.3
+
+script: "bundle exec rake test"
+
+before_install:
+  - sudo service elasticsearch start
+  - phantomjs --version
+
+branches:
+  only:
+    - travis
+
+notifications:
+  disable: true
