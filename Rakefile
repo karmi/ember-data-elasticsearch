@@ -18,7 +18,7 @@ task :test do |t, args|
 
   system "curl -s -X DELETE 'http://localhost:9200/people-test' > /dev/null"
 
-  cmd = "phantomjs tests/run-qunit.js '#{File.dirname(__FILE__)}/tests/index.html'"
+  cmd = "phantomjs --local-to-remote-url-access=yes tests/run-qunit.js '#{File.dirname(__FILE__)}/tests/index.html' 300000"
   # puts cmd
 
   result = ''
