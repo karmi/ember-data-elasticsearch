@@ -37,8 +37,9 @@ App.store = DS.Store.create({
 App.Models.Task = DS.Model.extend({
   // Properties:
   //
-  title:     DS.attr('string'),
-  completed: DS.attr('boolean'),
+  title:      DS.attr('string'),
+  completed:  DS.attr('boolean'),
+  created_at: DS.attr('string'),
 
   // Observe changes and persist them in elasticsearch
   //
@@ -54,10 +55,13 @@ App.Models.Task.reopenClass({
 });
 
 App.Controllers.tasks = Ember.ArrayController.create({
+  // TODO: Display sorted with `sortProperties`,
+  //       currently fails with `Cannot read property 'length' of undefined` @ ember-1.0.pre.js:18675
+  //
   content: App.Models.Task.find(),
 
   createTask: function(value) {
-    var task = App.Models.Task.createRecord({ title: value });
+    var task = App.Models.Task.createRecord({ title: value, completed: false, created_at: (new Date().toJSON()) });
     App.store.commit();
   },
 
