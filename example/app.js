@@ -15,12 +15,20 @@ var App = Em.Application.create({
   ready: function() {
     var index_url = [App.store.adapter.url, "tasks"].join('/');
 
-    // Let's check if the `tasks` index exists and create it otherwise.
+    // Let's check if the `tasks` index exists...
     //
     jQuery.ajax({
       url:   index_url,
       type:  'HEAD',
-      error: function() { jQuery.post(index_url, {}, function(data) {}) }
+      error: function(xhr, textStatus, error) {
+        // ... elasticsearch appears to be down (no response)
+        //
+        if ( ""          == error ) App.set("elasticsearch_unavailable", true);
+        //
+        // ... elasticsearch is up but the index is missing, let's create it
+        //
+        if ( "Not Found" == error ) jQuery.post(index_url, {}, function(data) {});
+      }
     });
   }
 });
