@@ -9,6 +9,8 @@ script: "bundle exec rake test"
 
 before_install:
   - sudo service elasticsearch start
+  - "export DISPLAY=:99.0"
+  - "sh -e /etc/init.d/xvfb start"
   - phantomjs --version
 
 branches:
