@@ -16,10 +16,11 @@ task :test do |t, args|
     exit(1)
   end
 
-  system "curl -s -X DELETE 'http://localhost:9200/people-test' > /dev/null"
+  system %Q|curl -s -X DELETE 'http://localhost:9200/people-test' > /dev/null|
+  system %Q|curl -s -X POST   'http://localhost:9200/people-test' -d '{"index.number_of_shards":1, "index.number_of_replicas":0}' > /dev/null|
 
-  cmd = "phantomjs tests/run-qunit.js '#{File.dirname(__FILE__)}/tests/index.html'"
-  # puts cmd
+  cmd = "phantomjs --local-to-remote-url-access=yes tests/run-qunit.js '#{File.dirname(__FILE__)}/tests/index.html' 300000"
+  puts cmd if ENV['DEBUG']
 
   result = ''
 
