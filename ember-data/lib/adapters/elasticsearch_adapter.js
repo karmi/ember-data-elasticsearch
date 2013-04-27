@@ -66,6 +66,8 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
   */
   url: "http://localhost:9200",
 
+  serializer: DS.FixtureSerializer,
+
   /**
     HTTP client
 
