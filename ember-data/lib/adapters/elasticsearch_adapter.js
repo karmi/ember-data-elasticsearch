@@ -173,19 +173,20 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     See the elasticsearch [documentation](http://elasticsearch.org/guide/reference/query-dsl) for more info.
   */
-  findQuery: function(store, type, query, recordArray) {
-    if (Ember.ENV.DEBUG) console.debug('findQuery', query);
-
-    var url = [this.url, type.url, '_search'].join('/');
-
-    var payload = query;
-    // var payload = { query: { query_string: { query: 'John' } } };
-
-    this.http.post(url, payload, function(data, textStatus, xhr) {
-      if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
-      recordArray.load(data['hits']['hits'].map( function(i) { return i['_source'] } ));
-    });
-  },
+    findQuery: function(store, type, query, recordArray) {
+        if (Ember.ENV.DEBUG) console.debug('findQuery', query);
+        var url = [this.url, type.url, '_search'].join('/');
+        var _this = this;
+        this.http.post(url, query, function(data, textStatus, xhr) {
+            if (Ember.ENV.DEBUG) {
+                console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
+            }
+            var emberData = data['hits']['hits'].map( function(i) { return i['_source'] } );
+            Ember.run(this, function(){
+                _this.didFindQuery(store, type, emberData, recordArray);
+            });
+        });
+    },
 
   /**
     Creates a new record, persisted in elasticsearch:
