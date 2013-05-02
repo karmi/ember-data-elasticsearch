@@ -223,20 +223,6 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
     });
   },
 
-  didCreateRecord: function(store, type, record, json) {
-    var recordData = record.get('data');
-
-    if (record.get('id')) {
-      recordData.commit();
-    } else {
-      record.beginPropertyChanges();
-      record.set('id', json._id)
-      record.endPropertyChanges();
-    }
-
-    record.send('didCommit');
-  },
-
   /**
     Persists object changes to elasticsearch:
 
@@ -259,16 +245,6 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
     });
   },
 
-  didUpdateRecord: function(store, type, record, json) {
-    var recordData = record.get('data');
-
-    recordData.commit();
-
-    record.send('didChangeData');
-    record.send('didSaveData');
-    record.send('didCommit');
-  },
-
   /**
     Deletes the record from elasticsearch:
 
@@ -288,10 +264,6 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data)
       self.didDeleteRecord(store, type, record, data);
     });
-  },
-
-  didDeleteRecord: function(store, type, record, json) {
-    store.didDeleteRecord(record);
   }
 
 });
