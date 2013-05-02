@@ -130,7 +130,9 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     this.http.get(url, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + ') :', Ember.ENV.CI ? JSON.stringify(data) : data);
-      store.load(type, id, data['_source']);
+      Ember.run(this, function() {
+        this.didFindRecord(store, type, data['_source'], id);
+      })
     });
   },
 
@@ -145,9 +147,10 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     this.http.post(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
-      store.loadMany(type, data['hits']['hits'].map( function(i) {
-        return Ember.Object.create(i['_source']).reopen({id: i._id, version: i._version})
-      } ));
+      Ember.run(this, function(){
+        var emberData = data['hits']['hits'].map( function(i) { return i['_source'] } );
+        this.didFindAll(store, type, emberData);
+      });
     });
   },
 
@@ -164,7 +167,9 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     this.http.post(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
-      store.loadMany(type, data['docs'].map( function(i) { return i['_source'] } ));
+      Ember.run(this, function(){
+        this.didFindMany(store, type, data['docs'].map( function(i) { return i['_source'] } ));
+      });
     });
   },
 
