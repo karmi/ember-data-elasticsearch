@@ -1,5 +1,6 @@
 .DS_Store
 tmp/
 dist/
-
 .bundle
+.idea
+*.iml
