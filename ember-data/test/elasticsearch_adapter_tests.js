@@ -10,7 +10,7 @@ var people_data = [
 ];
 
 var store = DS.Store.create({
-  revision: 4,
+  revision: 12,
   adapter: DS.ElasticSearchAdapter.create({url: URL})
 });
 
@@ -70,7 +70,7 @@ module("Adapter", {});
 
 test( "has default URL", function() {
   var store = DS.Store.create({
-    revision: 4,
+    revision: 12,
     adapter: DS.ElasticSearchAdapter.create()
   });
 
@@ -79,7 +79,7 @@ test( "has default URL", function() {
 
 test( "has custom URL", function() {
   var store = DS.Store.create({
-    revision: 4,
+    revision: 12,
     adapter: DS.ElasticSearchAdapter.create({url: "http://search.example.com"})
   });
 
