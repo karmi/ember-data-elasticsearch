@@ -127,11 +127,11 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
   find: function(store, type, id) {
     if (Ember.ENV.DEBUG) console.debug('find', store, type, id);
     var url = [this.url, type.url, id].join('/');
-
+    var self = this;
     this.http.get(url, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + ') :', Ember.ENV.CI ? JSON.stringify(data) : data);
       Ember.run(this, function() {
-        this.didFindRecord(store, type, data['_source'], id);
+        self.didFindRecord(store, type, data['_source'], id);
       })
     });
   },
@@ -144,12 +144,12 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
   findAll: function(store, type) {
     var url = [this.url, type.url, '_search'].join('/');
     var payload = {size: 1000000};
-
+    var self = this;
     this.http.post(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
       Ember.run(this, function(){
         var emberData = data['hits']['hits'].map( function(i) { return i['_source'] } );
-        this.didFindAll(store, type, emberData);
+        self.didFindAll(store, type, emberData);
       });
     });
   },
@@ -164,11 +164,11 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     var url = [this.url, type.url, '_mget'].join('/');
     var payload = {ids: ids};
-
+    var self = this;
     this.http.post(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
       Ember.run(this, function(){
-        this.didFindMany(store, type, data['docs'].map( function(i) { return i['_source'] } ));
+        self.didFindMany(store, type, data['docs'].map( function(i) { return i['_source'] } ));
       });
     });
   },
@@ -183,14 +183,14 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
   findQuery: function(store, type, query, recordArray) {
     if (Ember.ENV.DEBUG) console.debug('findQuery', query);
     var url = [this.url, type.url, '_search'].join('/');
-    var _this = this;
+    var self = this;
     this.http.post(url, query, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) {
         console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
       }
       var emberData = data['hits']['hits'].map( function(i) { return i['_source'] } );
       Ember.run(this, function(){
-        _this.didFindQuery(store, type, emberData, recordArray);
+        self.didFindQuery(store, type, emberData, recordArray);
       });
     });
   },
