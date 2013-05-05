@@ -210,7 +210,17 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     this.http.post(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data)
-      Ember.run(self, 'didCreateRecord', store, type, record, data);
+      var fakeData = self.serialize(record, { includeId: true });
+      if (record.get('id')===null) {
+        fakeData.id = data._id + '';
+      } else {
+        // coerce the id
+        record.beginPropertyChanges();
+        record.set('id', record.get('id')+'');
+        record.endPropertyChanges();
+
+      }
+      Ember.run(self, 'didCreateRecord', store, type, record, fakeData);
     });
   },
 
