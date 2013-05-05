@@ -66,6 +66,8 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
   */
   url: "http://localhost:9200",
 
+  serializer: DS.FixtureSerializer,
+
   /**
     HTTP client
 
@@ -125,10 +127,10 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
   find: function(store, type, id) {
     if (Ember.ENV.DEBUG) console.debug('find', store, type, id);
     var url = [this.url, type.url, id].join('/');
-
+    var self = this;
     this.http.get(url, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + ') :', Ember.ENV.CI ? JSON.stringify(data) : data);
-      store.load(type, id, data['_source']);
+      Ember.run(self, 'didFindRecord', store, type, data['_source'], id);
     });
   },
 
@@ -140,12 +142,10 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
   findAll: function(store, type) {
     var url = [this.url, type.url, '_search'].join('/');
     var payload = {size: 1000000};
-
+    var self = this;
     this.http.post(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
-      store.loadMany(type, data['hits']['hits'].map( function(i) {
-        return Ember.Object.create(i['_source']).reopen({id: i._id, version: i._version})
-      } ));
+      Ember.run(self, 'didFindAll', store, type, data['hits']['hits'].map( function(i) { return i['_source'] }));
     });
   },
 
@@ -159,10 +159,10 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     var url = [this.url, type.url, '_mget'].join('/');
     var payload = {ids: ids};
-
+    var self = this;
     this.http.post(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
-      store.loadMany(type, data['docs'].map( function(i) { return i['_source'] } ));
+      Ember.run(self, 'didFindMany', store, type, data['docs'].map( function(i) { return i['_source'] }));
     });
   },
 
@@ -175,15 +175,14 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
   */
   findQuery: function(store, type, query, recordArray) {
     if (Ember.ENV.DEBUG) console.debug('findQuery', query);
-
     var url = [this.url, type.url, '_search'].join('/');
-
-    var payload = query;
-    // var payload = { query: { query_string: { query: 'John' } } };
-
-    this.http.post(url, payload, function(data, textStatus, xhr) {
-      if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
-      recordArray.load(data['hits']['hits'].map( function(i) { return i['_source'] } ));
+    var self = this;
+    this.http.post(url, query, function(data, textStatus, xhr) {
+      if (Ember.ENV.DEBUG) {
+        console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data);
+      }
+      var emberData = data['hits']['hits'].map( function(i) { return i['_source'] } );
+      Ember.run(self, 'didFindQuery', store, type, emberData, recordArray);
     });
   },
 
@@ -211,22 +210,18 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     this.http.post(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data)
-      self.didCreateRecord(store, type, record, data);
+      var fakeData = self.serialize(record, { includeId: true });
+      if (record.get('id')===null) {
+        fakeData.id = data._id + '';
+      } else {
+        // coerce the id
+        record.beginPropertyChanges();
+        record.set('id', record.get('id')+'');
+        record.endPropertyChanges();
+
+      }
+      Ember.run(self, 'didCreateRecord', store, type, record, fakeData);
     });
-  },
-
-  didCreateRecord: function(store, type, record, json) {
-    var recordData = record.get('data');
-
-    if (record.get('id')) {
-      recordData.commit();
-    } else {
-      record.beginPropertyChanges();
-      record.set('id', json._id)
-      record.endPropertyChanges();
-    }
-
-    record.send('didCommit');
   },
 
   /**
@@ -247,18 +242,8 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     this.http.put(url, payload, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data)
-      self.didUpdateRecord(store, type, record, data);
+      Ember.run(self, 'didUpdateRecord', store, type, record, data);
     });
-  },
-
-  didUpdateRecord: function(store, type, record, json) {
-    var recordData = record.get('data');
-
-    recordData.commit();
-
-    record.send('didChangeData');
-    record.send('didSaveData');
-    record.send('didCommit');
   },
 
   /**
@@ -278,12 +263,8 @@ DS.ElasticSearchAdapter = DS.Adapter.extend({
 
     this.http.delete(url, {}, function(data, textStatus, xhr) {
       if (Ember.ENV.DEBUG) console.debug('elasticsearch (' + xhr.status + '):', Ember.ENV.CI ? JSON.stringify(data) : data)
-      self.didDeleteRecord(store, type, record, data);
+      Ember.run(self, 'didDeleteRecord', store, type, record, data);
     });
-  },
-
-  didDeleteRecord: function(store, type, record, json) {
-    store.didDeleteRecord(record);
   }
 
 });
